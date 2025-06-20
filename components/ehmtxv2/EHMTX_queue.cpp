@@ -86,6 +86,7 @@ namespace esphome
 #ifdef EHMTXv2_ADV_BITMAP
     this->bitmap = nullptr;
 #endif
+    this->text_vector = nullptr;
     this->progressbar_color = esphome::display::COLOR_OFF;
     this->progressbar_back_color = esphome::display::COLOR_OFF;
   }
@@ -890,6 +891,7 @@ namespace esphome
         this->config_->display->start_clipping(8,0,31,7);
         color_ = (this->mode == MODE_RAINBOW_ICON || this->mode == MODE_RAINBOW_ALERT_SCREEN) ? this->config_->rainbow_color : this->text_color;
 #ifdef EHMTXv2_USE_RTL
+        // This means that multicolor text does not work with RTL?
         this->config_->display->print(this->xpos() + xoffset, this->ypos() + yoffset, font, color_, esphome::display::TextAlign::BASELINE_RIGHT,
                                       this->text.c_str());
 #else
@@ -898,7 +900,22 @@ namespace esphome
           this->config_->draw_rainbow_text(this->text, font, this->xpos() + xoffset, this->ypos() + yoffset);
         else
 #endif
-          this->config_->draw_text(this->text, font, color_, this->xpos() + xoffset, this->ypos() + yoffset);
+          //this->config_->draw_text(this->text, font, color_, this->xpos() + xoffset, this->ypos() + yoffset);
+          if (this->mode == MODE_RAINBOW_ICON || this->mode == MODE_RAINBOW_ALERT_SCREEN) 
+          {
+            for (auto text_segment : this->text_vector)
+            {
+              this->config_->draw_text(text_segment.second, font, color_, this->xpos() + xoffset, this->ypos() + yoffset);
+            }
+          }
+          else
+          {
+            for (auto text_segment : this->text_vector)
+            {
+              this->config_->draw_text(text_segment.second, font, text_segment.first, this->xpos() + xoffset, this->ypos() + yoffset);
+            }
+          }
+
 #endif
         this->config_->display->start_clipping(0,0,0,0);
         

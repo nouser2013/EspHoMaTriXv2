@@ -362,11 +362,13 @@ namespace esphome
 
 #ifdef USE_ESP32
     PROGMEM Color text_color, progressbar_color, progressbar_back_color;
+    PROGMEM std::vector<std::pair<Color, std::string>> text_vector;
     PROGMEM std::string text;
     PROGMEM std::string icon_name;
 #endif
 #ifdef USE_ESP8266
     Color text_color, progressbar_color, progressbar_back_color;
+    std::vector<std::pair<Color, std::string>> text_vector;
     std::string text;
     std::string icon_name;
 #endif

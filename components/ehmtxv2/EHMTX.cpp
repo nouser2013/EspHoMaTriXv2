@@ -108,6 +108,50 @@ namespace esphome
     }
   }
 
+  std::vector<std::pair<Color, std::string>> EHMTX::extractColoredText(const std::string& input, int32_t r, int32_t g, int32_t b) {
+    std::vector<std::pair<Color, std::string>> result;
+    std::regex colorRegex(R"(#[A-Fa-f0-9]{6})");
+    std::sregex_iterator it(input.begin(), input.end(), colorRegex);
+    std::sregex_iterator end;
+
+    size_t lastPos = 0;
+    // Take over the default color from the call
+    std::string currentColor = std::format("#{:02X}{:02X}{:02X}", r, g, b);
+    
+    for (; it != end; ++it) {
+        std::smatch match = *it;
+        size_t colorPos = match.position();
+        std::string hexCode = match.str();
+
+        std::string textSegment = input.substr(lastPos, colorPos - lastPos);
+        result.emplace_back(
+          Color(
+            std::stoi(hexCode.substr(1,2), nullptr, 16),
+            std::stoi(hexCode.substr(3,2), nullptr, 16),
+            std::stoi(hexCode.substr(5,2), nullptr, 16)
+          ),
+          textSegment
+        );
+
+        currentColor = hexCode;
+        lastPos = colorPos + hexCode.length(); // Start of the text after this color. Keep the length() function for multibyte text?
+    }
+
+    // Add the last text segment if there is a trailing color
+    if (lastPos < input.length()) {
+        std::string textSegment = input.substr(lastPos);
+        result.emplace_back(
+          Color(
+            std::stoi(hexCode.substr(1,2), nullptr, 16),
+            std::stoi(hexCode.substr(3,2), nullptr, 16),
+            std::stoi(hexCode.substr(5,2), nullptr, 16)
+          ),
+          textSegment
+        );
+    }
+
+    return result;
+}
 /**
  * @brief display a indicator on the left side
  * 
@@ -1861,6 +1905,7 @@ namespace esphome
     {
       t->process(screen->icon_name, (uint8_t)screen->mode);
     }
+    screen->text_vector = extractColoredText(text, r, g, b);
     ESP_LOGD(TAG, "icon screen icon: %d iconname: %s text: %s lifetime: %d screen_time: %d", icon, iconname.c_str(), text.c_str(), lifetime, screen_time);
     screen->status();
   }
