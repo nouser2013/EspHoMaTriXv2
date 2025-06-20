@@ -126,9 +126,9 @@ namespace esphome
         std::string textSegment = input.substr(lastPos, colorPos - lastPos);
         result.emplace_back(
           Color(
-            std::stoi(hexCode.substr(1,2), nullptr, 16),
-            std::stoi(hexCode.substr(3,2), nullptr, 16),
-            std::stoi(hexCode.substr(5,2), nullptr, 16)
+            std::stoi(currentColor.substr(1,2), nullptr, 16),
+            std::stoi(currentColor.substr(3,2), nullptr, 16),
+            std::stoi(currentColor.substr(5,2), nullptr, 16)
           ),
           textSegment
         );
@@ -142,9 +142,9 @@ namespace esphome
         std::string textSegment = input.substr(lastPos);
         result.emplace_back(
           Color(
-            std::stoi(hexCode.substr(1,2), nullptr, 16),
-            std::stoi(hexCode.substr(3,2), nullptr, 16),
-            std::stoi(hexCode.substr(5,2), nullptr, 16)
+            std::stoi(currentColor.substr(1,2), nullptr, 16),
+            std::stoi(currentColor.substr(3,2), nullptr, 16),
+            std::stoi(currentColor.substr(5,2), nullptr, 16)
           ),
           textSegment
         );
